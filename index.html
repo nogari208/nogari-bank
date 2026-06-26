@@ -23,9 +23,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
 #app{width:100%;height:100%;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
 .screen{display:none;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(85px + var(--safe-bottom))}
 .screen.active{display:block}
-.topbar{padding:calc(var(--safe-top) + 14px) 20px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:0.5px solid var(--border)}
-.topbar-title{font-size:19px;font-weight:700}
-.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.topbar{padding:calc(var(--safe-top) + 18px) 22px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg);z-index:10}
+.topbar-title{font-size:26px;font-weight:800;letter-spacing:-0.5px}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
 .balance-card{margin:16px 16px 0;background:var(--bg3);border:0.5px solid var(--border2);border-radius:20px;padding:22px}
 .balance-label{font-size:12px;color:var(--gray);letter-spacing:0.5px;margin-bottom:6px}
 .balance-value{font-size:34px;font-weight:700;letter-spacing:-1px}
@@ -38,8 +39,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
 .qa:active{opacity:0.6}
 .qa-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px}
 .qa-label{font-size:11px;color:var(--gray);text-align:center}
-.section-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 10px}
-.section-title{font-size:15px;font-weight:600}
+.section-header{display:flex;justify-content:space-between;align-items:center;padding:22px 22px 12px}
+.section-title{font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1.2px}
 .section-link{font-size:12px;color:var(--blue);cursor:pointer}
 .expense-cards{display:flex;gap:10px;padding:0 16px 4px;overflow-x:auto;scrollbar-width:none}
 .expense-cards::-webkit-scrollbar{display:none}
@@ -66,7 +67,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
 .tab.active svg{stroke:var(--blue)}.tab.active .tab-label{color:var(--blue)}
 .tab-center{background:linear-gradient(135deg,var(--blue),var(--purple));width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:-18px;cursor:pointer;flex-shrink:0;border:3px solid var(--bg2)}
 .tab-center svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-bottom:14px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 22px;margin-bottom:18px}
 .stat-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:16px;padding:14px}
 .stat-label{font-size:11px;color:var(--gray);margin-bottom:5px}
 .stat-val{font-size:20px;font-weight:700}
@@ -96,13 +97,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
 .savings-vals{display:flex;justify-content:space-between}
 .savings-curr{font-size:13px;font-weight:600}
 .savings-target{font-size:12px;color:var(--gray)}
-.profile-header{padding:24px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:8px}
-.profile-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+.profile-header{padding:30px 16px 22px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.profile-avatar{width:92px;height:92px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;cursor:pointer;position:relative;box-shadow:0 8px 24px rgba(126,184,247,0.25)}
+.profile-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;top:0;left:0}
+.profile-avatar-edit{position:absolute;bottom:2px;right:2px;width:28px;height:28px;border-radius:50%;background:var(--blue);border:3px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:12px;z-index:2}
 .profile-name{font-size:18px;font-weight:700}
 .profile-email{font-size:13px;color:var(--gray)}
-.badge{font-size:11px;color:var(--blue);background:rgba(126,184,247,0.1);border:0.5px solid rgba(126,184,247,0.3);border-radius:20px;padding:4px 14px}
-.menu-list{padding:0 16px}
-.menu-item{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:0.5px solid var(--border);cursor:pointer;transition:opacity 0.15s}
+.badge{font-size:11px;font-weight:600;color:var(--blue);background:rgba(126,184,247,0.1);border:0.5px solid rgba(126,184,247,0.25);border-radius:20px;padding:5px 16px;letter-spacing:0.3px}
+.menu-list{padding:0 22px;margin-top:8px}
+.menu-item{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:0.5px solid var(--border);cursor:pointer;transition:opacity 0.15s}
 .menu-item:active{opacity:0.6}
 .menu-item:last-child{border-bottom:none}
 .menu-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
@@ -257,18 +260,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
     <div class="month-filter">
       <select id="month-select" onchange="renderAll()"></select>
     </div>
-    <div class="stats-grid" style="margin-top:14px">
+    <div class="stats-grid" style="margin-top:16px">
       <div class="stat-card"><div class="stat-label">Total gasto</div><div class="stat-val neg" id="stat-total">R$ 0,00</div><div class="stat-sub">este mês</div></div>
       <div class="stat-card"><div class="stat-label">Receitas</div><div class="stat-val pos" id="stat-receitas">R$ 0,00</div><div class="stat-sub">registradas</div></div>
     </div>
-    <div style="padding:0 16px 10px;display:flex;gap:10px"><div class="stat-card" style="flex:1"><div class="stat-label">Registros</div><div class="stat-val" id="stat-count">0</div><div class="stat-sub">transações</div></div></div>
-    <div class="section-header"><div class="section-title">Resumo do período</div></div>
+    <div class="section-header"><div class="section-title">Resumo do período</div><div style="font-size:11px;color:var(--gray2)" id="stat-count-inline">0 transações</div></div>
     <div class="extrato-summary">
-      <div class="es-card"><div class="es-label">Gastos Fixos</div><div class="es-val neg" id="es-fixos">R$ 0</div></div>
-      <div class="es-card"><div class="es-label">Gastos Variáveis</div><div class="es-val neg" id="es-var">R$ 0</div></div>
+      <div class="es-card"><div class="es-label">Fixos</div><div class="es-val neg" id="es-fixos">R$ 0</div></div>
+      <div class="es-card"><div class="es-label">Variáveis</div><div class="es-val neg" id="es-var">R$ 0</div></div>
       <div class="es-card"><div class="es-label">Receitas</div><div class="es-val pos" id="es-receitas">R$ 0</div></div>
     </div>
-    <div class="section-header"><div class="section-title">Todas as transações</div></div>
+    <div class="section-header"><div class="section-title">Transações</div></div>
     <div class="tx-list" id="full-tx-list"><div class="empty-state">Nenhuma transação ainda.</div></div>
 
     <div class="section-header" style="margin-top:8px">
@@ -308,7 +310,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
   <div id="screen-perfil" class="screen">
     <div class="topbar"><div class="topbar-title">Perfil</div></div>
     <div class="profile-header">
-      <div class="profile-avatar" id="perfil-avatar">RN</div>
+      <div class="profile-avatar" id="perfil-avatar" onclick="document.getElementById('foto-input').click()">RN
+        <div class="profile-avatar-edit">📷</div>
+      </div>
+      <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="uploadFoto(event)">
       <div class="profile-name" id="perfil-name">Kauã Henrique Nogari Sabia</div>
       <div class="profile-email" id="perfil-email">kaua@nogari.com</div>
       <div class="badge">Plano Premium</div>
@@ -335,6 +340,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
       <div class="menu-item">
         <div class="menu-icon" style="background:rgba(167,139,250,0.1)">🔔</div>
         <div class="menu-text"><div class="menu-title">Notificações</div><div class="menu-sub">Alertas e lembretes</div></div>
+        <span style="color:var(--gray2);font-size:20px">›</span>
+      </div>
+      <div class="menu-item" onclick="document.getElementById('foto-input').click()">
+        <div class="menu-icon" style="background:rgba(167,139,250,0.1)">📷</div>
+        <div class="menu-text"><div class="menu-title">Foto de perfil</div><div class="menu-sub">Trocar ou adicionar foto</div></div>
         <span style="color:var(--gray2);font-size:20px">›</span>
       </div>
       <div class="menu-item" onclick="exportData()">
@@ -494,7 +504,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
 
 <script>
 const SCREENS = ['home','extrato','assistente','perfil'];
-const LOGO_PDF = 'data:image/png;base64,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';
+const LOGO_PDF = 'data:image/png;base64,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';
 const catIcons = {Alimentação:'🛒',Transporte:'🚗',Moradia:'🏠',Saúde:'❤️',Beleza:'💇',Vestuário:'👕',Lazer:'🎮',Assinatura:'📱',Educação:'📚',Pets:'🐾',Presentes:'🎁',Outros:'💰'};
 const catBg = {Alimentação:'rgba(110,231,199,0.1)',Transporte:'rgba(110,231,199,0.1)',Moradia:'rgba(126,184,247,0.1)',Saúde:'rgba(248,113,113,0.1)',Beleza:'rgba(244,114,182,0.1)',Vestuário:'rgba(251,191,36,0.1)',Lazer:'rgba(167,139,250,0.1)',Assinatura:'rgba(167,139,250,0.1)',Educação:'rgba(126,184,247,0.1)',Pets:'rgba(251,146,60,0.1)',Presentes:'rgba(244,114,182,0.1)',Outros:'rgba(156,163,175,0.1)'};
 let recognition = null;
@@ -646,10 +656,62 @@ function getInitials(name) {
 async function applyProfile() {
   const p = await loadProfile();
   document.getElementById('user-name-home').textContent = p.nome;
-  document.getElementById('avatar-initials').textContent = getInitials(p.nome);
-  document.getElementById('perfil-avatar').textContent = getInitials(p.nome);
   document.getElementById('perfil-name').textContent = p.nome;
   document.getElementById('perfil-email').textContent = p.email;
+
+  const foto = localStorage.getItem('nogari_foto');
+  const ini = getInitials(p.nome);
+
+  // Avatar grande (perfil)
+  const big = document.getElementById('perfil-avatar');
+  if(foto) {
+    big.innerHTML = '<img src="' + foto + '" alt="foto"><div class="profile-avatar-edit">📷</div>';
+  } else {
+    big.innerHTML = ini + '<div class="profile-avatar-edit">📷</div>';
+  }
+
+  // Avatar pequeno (home)
+  const small = document.getElementById('avatar-initials');
+  if(foto) small.innerHTML = '<img src="' + foto + '" alt="foto">';
+  else small.textContent = ini;
+}
+
+function uploadFoto(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  if(file.size > 4 * 1024 * 1024) { showToast('Foto muito grande (máx 4MB)', 'var(--red)'); return; }
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    // redimensiona pra não pesar
+    const img = new Image();
+    img.onload = async () => {
+      const canvas = document.createElement('canvas');
+      const size = 300;
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      // crop quadrado central
+      const min = Math.min(img.width, img.height);
+      const sx = (img.width - min) / 2;
+      const sy = (img.height - min) / 2;
+      ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      try {
+        localStorage.setItem('nogari_foto', dataUrl);
+        await applyProfile();
+        showToast('📷 Foto atualizada!', 'var(--teal)');
+      } catch(err) {
+        showToast('Erro ao salvar foto', 'var(--red)');
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removerFoto() {
+  localStorage.removeItem('nogari_foto');
+  applyProfile();
+  showToast('Foto removida', 'var(--gray)');
 }
 
 // Parse "DD/MM/YYYY" -> {y, m}
@@ -724,7 +786,7 @@ async function renderAll() {
 
   document.getElementById('stat-total').textContent = fmt(totalGastosF);
   document.getElementById('stat-receitas').textContent = fmt(totalReceitasF);
-  document.getElementById('stat-count').textContent = filtered.length;
+  { const sc = document.getElementById('stat-count-inline'); if(sc) sc.textContent = filtered.length + (filtered.length === 1 ? ' transação' : ' transações'); }
   document.getElementById('es-fixos').textContent = fmtShort(fixosF);
   document.getElementById('es-var').textContent = fmtShort(varF);
   document.getElementById('es-receitas').textContent = fmtShort(totalReceitasF);
@@ -838,6 +900,7 @@ async function gerarPDF() {
   const data = monthKey === 'todos' ? all : all.filter(e => parseMonthKey(e.data) === monthKey);
   const periodo = monthKey === 'todos' ? 'Todos os meses' : monthLabel(monthKey);
   const profile = await loadProfile();
+  const salario = loadSalario();
 
   if(data.length === 0) { showToast('Sem registros no período', 'var(--red)'); return; }
 
@@ -848,28 +911,40 @@ async function gerarPDF() {
   const tVar = variaveis.reduce((s,e)=>s+Number(e.valor),0);
   const tRec = receitas.reduce((s,e)=>s+Number(e.valor),0);
   const tGastos = tFixos + tVar;
-  const saldo = tRec - tGastos;
+
+  // SALDO FINAL = salário + receitas extras - gastos fixos - gastos variáveis
+  const saldoFinal = salario + tRec - tGastos;
+  const sobrou = saldoFinal > 0 ? saldoFinal : 0;
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({unit:'pt', format:'a4'});
   const W = doc.internal.pageSize.getWidth();
   let y = 0;
 
-  // Header band (com logo)
-  doc.setFillColor(14,14,18); doc.rect(0,0,W,100,'F');
-  // Logo NOGARI (ícone N)
-  try { doc.addImage(LOGO_PDF, 'PNG', 40, 26, 48, 48); } catch(e) {}
+  // ===== Header com logo =====
+  doc.setFillColor(14,14,18); doc.rect(0,0,W,108,'F');
+  if(typeof LOGO_PDF !== 'undefined' && LOGO_PDF) {
+    try { doc.addImage(LOGO_PDF, 'PNG', 40, 28, 50, 50); } catch(e) { console.warn('logo falhou', e); }
+  }
   doc.setTextColor(126,184,247); doc.setFont('helvetica','bold'); doc.setFontSize(22);
-  doc.text('NOGARI', 102, 50);
+  doc.text('NOGARI', 104, 52);
   doc.setTextColor(167,139,250); doc.setFontSize(11); doc.setFont('helvetica','normal');
-  doc.text('bank  •  Extrato Financeiro', 102, 66);
-  doc.setTextColor(156,163,175); doc.setFontSize(9);
-  doc.text(profile.nome + '   |   Periodo: ' + periodo, 40, 90);
+  doc.text('bank  -  Extrato Financeiro', 104, 70);
+  doc.setTextColor(180,185,195); doc.setFontSize(9);
+  doc.text(profile.nome, 40, 96);
   doc.setFontSize(8);
-  doc.text('Emitido em ' + new Date().toLocaleString('pt-BR'), W-40, 90, {align:'right'});
+  doc.text('Emitido em ' + new Date().toLocaleString('pt-BR'), W-40, 96, {align:'right'});
 
-  y = 130;
-  // Summary boxes
+  // ===== Faixa do PERÍODO em destaque =====
+  y = 124;
+  doc.setFillColor(126,184,247); doc.roundedRect(40, y, W-80, 38, 8, 8, 'F');
+  doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(8);
+  doc.text('PERIODO DO EXTRATO', 56, y+15);
+  doc.setFontSize(15);
+  doc.text(periodo.toUpperCase(), 56, y+31);
+  y += 60;
+
+  // ===== Caixas de resumo =====
   function box(x, label, val, color) {
     doc.setFillColor(245,246,248); doc.roundedRect(x, y, 150, 60, 6, 6, 'F');
     doc.setTextColor(120,120,130); doc.setFontSize(8); doc.setFont('helvetica','normal');
@@ -880,28 +955,67 @@ async function gerarPDF() {
   box(40,  'Gastos Fixos', fmt(tFixos), [220,70,70]);
   box(222, 'Gastos Variaveis', fmt(tVar), [220,70,70]);
   box(404, 'Receitas', fmt(tRec), [40,160,120]);
-  y += 80;
-  doc.setFillColor(saldo<0?252:240, saldo<0?235:248, saldo<0?235:244);
-  doc.roundedRect(40, y, W-80, 44, 6, 6, 'F');
-  doc.setTextColor(80,80,90); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('SALDO DO PERIODO (Receitas - Gastos)', 54, y+27);
-  doc.setTextColor(saldo<0?200:30, saldo<0?50:150, saldo<0?50:110); doc.setFontSize(16);
-  doc.text((saldo<0?'-':'') + fmt(Math.abs(saldo)), W-54, y+28, {align:'right'});
-  y += 70;
+  y += 78;
 
+  // ===== Cálculo do saldo final (com salário) =====
+  doc.setFillColor(248,249,251); doc.roundedRect(40, y, W-80, 116, 8, 8, 'F');
+  doc.setTextColor(90,90,100); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+  doc.text('FECHAMENTO DO PERIODO', 56, y+22);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(110,110,120);
+
+  function linha(label, val, cor, yy, bold) {
+    doc.setFont('helvetica', bold ? 'bold' : 'normal');
+    doc.setTextColor(110,110,120);
+    doc.text(label, 56, yy);
+    doc.setTextColor(cor[0],cor[1],cor[2]);
+    doc.text(val, W-56, yy, {align:'right'});
+  }
+  linha('(+) Salario cadastrado', salario>0 ? fmt(salario) : 'Nao cadastrado', salario>0?[40,160,120]:[150,150,160], y+44, false);
+  linha('(+) Receitas extras (freela, etc)', '+' + fmt(tRec), [40,160,120], y+62, false);
+  linha('(-) Gastos fixos', '-' + fmt(tFixos), [220,70,70], y+80, false);
+  linha('(-) Gastos variaveis', '-' + fmt(tVar), [220,70,70], y+98, false);
+  // linha divisória
+  doc.setDrawColor(220,222,228); doc.line(56, y+106, W-56, y+106);
+  y += 116;
+
+  // ===== Saldo final destacado =====
+  y += 14;
+  const positivo = saldoFinal >= 0;
+  doc.setFillColor(positivo?235:252, positivo?247:235, positivo?240:235);
+  doc.roundedRect(40, y, W-80, 50, 8, 8, 'F');
+  doc.setTextColor(70,70,80); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+  doc.text('SALDO FINAL (o que sobrou)', 56, y+30);
+  doc.setFontSize(20); doc.setTextColor(positivo?20:200, positivo?150:50, positivo?100:50);
+  doc.text((positivo ? '' : '-') + fmt(Math.abs(saldoFinal)), W-56, y+32, {align:'right'});
+  y += 64;
+  // selo "sobrado"
+  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(150,150,160);
+  if(sobrou > 0) {
+    doc.text('Sobrou ' + fmt(sobrou) + ' neste periodo.', 56, y);
+  } else {
+    doc.text('R$ 0,00 sobrado neste periodo.', 56, y);
+  }
+  if(salario === 0) {
+    doc.setTextColor(200,140,40);
+    doc.text('* Cadastre seu salario no Perfil para o saldo final ficar completo.', 56, y+12);
+    y += 12;
+  }
+  y += 24;
+
+  // ===== Tabelas detalhadas =====
   function tableSection(title, items, accent) {
     if(items.length === 0) return;
-    if(y > 730) { doc.addPage(); y = 50; }
+    if(y > 720) { doc.addPage(); y = 50; }
     doc.setTextColor(accent[0],accent[1],accent[2]); doc.setFontSize(12); doc.setFont('helvetica','bold');
     doc.text(title, 40, y); y += 8;
     doc.setDrawColor(225,225,230); doc.line(40, y, W-40, y); y += 18;
     doc.setFontSize(9); doc.setFont('helvetica','normal');
     items.forEach(e => {
-      if(y > 800) { doc.addPage(); y = 50; }
+      if(y > 790) { doc.addPage(); y = 50; }
       doc.setTextColor(40,40,50);
-      doc.text(e.nome.substring(0,40), 40, y);
+      doc.text((e.nome||'').substring(0,40), 40, y);
       doc.setTextColor(150,150,160); doc.setFontSize(8);
-      doc.text((e.categoria||'') + '  •  ' + e.data, 40, y+11);
+      doc.text((e.categoria||'') + '  -  ' + e.data, 40, y+11);
       doc.setFontSize(10); doc.setTextColor(accent[0],accent[1],accent[2]); doc.setFont('helvetica','bold');
       doc.text((e.fluxo==='receita'?'+':'-') + fmt(e.valor), W-40, y, {align:'right'});
       doc.setFont('helvetica','normal');
@@ -918,13 +1032,13 @@ async function gerarPDF() {
   for(let i=1;i<=pages;i++){
     doc.setPage(i);
     doc.setTextColor(170,170,180); doc.setFontSize(8);
-    doc.text('NOGARI bank  •  Documento gerado automaticamente', 40, 825);
+    doc.text('NOGARI bank  -  ' + periodo, 40, 825);
     doc.text(i + '/' + pages, W-40, 825, {align:'right'});
   }
 
   const fname = 'extrato-nogari-' + (monthKey==='todos'?'completo':monthKey) + '.pdf';
   doc.save(fname);
-  showToast('✓ PDF gerado!', 'var(--teal)');
+  showToast('PDF gerado!', 'var(--teal)');
 }
 
 
