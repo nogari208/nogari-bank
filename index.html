@@ -271,17 +271,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
     <div class="section-header"><div class="section-title">Todas as transações</div></div>
     <div class="tx-list" id="full-tx-list"><div class="empty-state">Nenhuma transação ainda.</div></div>
 
-    <div class="section-header" style="margin-top:8px"><div class="section-title">Metas de poupança</div></div>
-    <div class="savings-card">
-      <div class="savings-top"><div class="savings-name">Viagem Europa</div><div class="savings-pct">62%</div></div>
-      <div class="savings-bar"><div class="savings-fill" style="width:62%"></div></div>
-      <div class="savings-vals"><div class="savings-curr">R$ 6.200</div><div class="savings-target">Meta: R$ 10.000</div></div>
+    <div class="section-header" style="margin-top:8px">
+      <div class="section-title">Metas de poupança</div>
+      <div onclick="openMetaModal()" style="color:var(--blue);font-size:13px;font-weight:600;cursor:pointer">+ Nova meta</div>
     </div>
-    <div class="savings-card">
-      <div class="savings-top"><div class="savings-name">Reserva de emergência</div><div class="savings-pct">38%</div></div>
-      <div class="savings-bar"><div class="savings-fill" style="width:38%"></div></div>
-      <div class="savings-vals"><div class="savings-curr">R$ 3.800</div><div class="savings-target">Meta: R$ 10.000</div></div>
-    </div>
+    <div id="metas-list"></div>
   </div>
 
   <div id="screen-assistente" class="screen">
@@ -322,6 +316,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-label">Total gasto</div><div class="stat-val neg" id="perfil-total">R$ 0</div><div class="stat-sub">este mês</div></div>
       <div class="stat-card"><div class="stat-label">Registros</div><div class="stat-val" id="perfil-count">0</div><div class="stat-sub">transações</div></div>
+    </div>
+    <div class="savings-card" style="cursor:pointer" onclick="openSalarioModal()">
+      <div class="savings-top"><div class="savings-name">💰 Meu salário</div><div class="savings-pct" id="perfil-salario-edit">editar</div></div>
+      <div class="savings-vals"><div class="savings-curr" id="perfil-salario">Não cadastrado</div><div class="savings-target">por mês</div></div>
     </div>
     <div class="menu-list">
       <div class="menu-item" onclick="openEditProfile()">
@@ -457,12 +455,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
   </div>
 </div>
 
+<div class="modal-overlay" id="meta-modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Nova meta de poupança</div>
+    <input type="hidden" id="meta-id">
+    <div class="field"><label>Nome da meta</label><input type="text" id="meta-nome" placeholder="Ex: Comprar moto"></div>
+    <div class="field"><label>Valor do objetivo (R$)</label><input type="number" id="meta-alvo" placeholder="15000" inputmode="decimal"></div>
+    <div class="field"><label>Quanto já tenho guardado (R$)</label><input type="number" id="meta-atual" placeholder="0" inputmode="decimal"></div>
+    <div class="field"><label>Como definir o valor mensal?</label>
+      <select id="meta-modo" onchange="toggleMetaModo(this.value)">
+        <option value="fixo">Eu digito o valor por mês</option>
+        <option value="percent">% do meu salário</option>
+      </select>
+    </div>
+    <div class="field" id="meta-campo-fixo"><label>Quanto guardo por mês (R$)</label><input type="number" id="meta-mensal" placeholder="300" inputmode="decimal"></div>
+    <div class="field" id="meta-campo-percent" style="display:none"><label>% do salário que vou guardar</label><input type="number" id="meta-percent" placeholder="20" inputmode="decimal"></div>
+    <div id="meta-previsao" style="background:var(--bg4);border-radius:12px;padding:14px;margin-bottom:12px;font-size:13px;color:var(--gray);display:none"></div>
+    <button class="btn-primary" onclick="calcularPrevisao()">Calcular previsão</button>
+    <button class="btn-primary" onclick="saveMeta()" style="margin-top:8px">Salvar meta</button>
+    <button class="btn-danger" id="meta-del-btn" onclick="deleteMeta()" style="display:none">Excluir meta</button>
+    <button class="btn-ghost" onclick="document.getElementById('meta-modal').classList.remove('show')">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="salario-modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Meu salário</div>
+    <div class="field"><label>Salário mensal (R$)</label><input type="number" id="salario-input" placeholder="2500" inputmode="decimal"></div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:12px">Fica salvo só no seu celular. Usado pra calcular metas por porcentagem.</div>
+    <button class="btn-primary" onclick="saveSalario()">Salvar</button>
+    <button class="btn-ghost" onclick="document.getElementById('salario-modal').classList.remove('show')">Cancelar</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const SCREENS = ['home','extrato','assistente','perfil'];
-const catIcons = {Alimentação:'🛒',Transporte:'🚗',Moradia:'🏠',Saúde:'❤️',Lazer:'🎮',Assinatura:'📱',Educação:'📚',Outros:'💰'};
-const catBg = {Alimentação:'rgba(110,231,199,0.1)',Transporte:'rgba(110,231,199,0.1)',Moradia:'rgba(126,184,247,0.1)',Saúde:'rgba(248,113,113,0.1)',Lazer:'rgba(167,139,250,0.1)',Assinatura:'rgba(167,139,250,0.1)',Educação:'rgba(126,184,247,0.1)',Outros:'rgba(156,163,175,0.1)'};
+const LOGO_PDF = 'data:image/png;base64,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';
+const catIcons = {Alimentação:'🛒',Transporte:'🚗',Moradia:'🏠',Saúde:'❤️',Beleza:'💇',Vestuário:'👕',Lazer:'🎮',Assinatura:'📱',Educação:'📚',Pets:'🐾',Presentes:'🎁',Outros:'💰'};
+const catBg = {Alimentação:'rgba(110,231,199,0.1)',Transporte:'rgba(110,231,199,0.1)',Moradia:'rgba(126,184,247,0.1)',Saúde:'rgba(248,113,113,0.1)',Beleza:'rgba(244,114,182,0.1)',Vestuário:'rgba(251,191,36,0.1)',Lazer:'rgba(167,139,250,0.1)',Assinatura:'rgba(167,139,250,0.1)',Educação:'rgba(126,184,247,0.1)',Pets:'rgba(251,146,60,0.1)',Presentes:'rgba(244,114,182,0.1)',Outros:'rgba(156,163,175,0.1)'};
 let recognition = null;
 let listening = false;
 
@@ -821,17 +855,20 @@ async function gerarPDF() {
   const W = doc.internal.pageSize.getWidth();
   let y = 0;
 
-  // Header band
-  doc.setFillColor(14,14,18); doc.rect(0,0,W,90,'F');
+  // Header band (com logo)
+  doc.setFillColor(14,14,18); doc.rect(0,0,W,100,'F');
+  // Logo NOGARI (ícone N)
+  try { doc.addImage(LOGO_PDF, 'PNG', 40, 26, 48, 48); } catch(e) {}
   doc.setTextColor(126,184,247); doc.setFont('helvetica','bold'); doc.setFontSize(22);
-  doc.text('NOGARI', 40, 45);
+  doc.text('NOGARI', 102, 50);
   doc.setTextColor(167,139,250); doc.setFontSize(11); doc.setFont('helvetica','normal');
-  doc.text('bank  •  Extrato Financeiro', 120, 45);
+  doc.text('bank  •  Extrato Financeiro', 102, 66);
   doc.setTextColor(156,163,175); doc.setFontSize(9);
-  doc.text(profile.nome + '   |   Periodo: ' + periodo, 40, 68);
-  doc.text('Emitido em ' + new Date().toLocaleString('pt-BR'), 40, 80);
+  doc.text(profile.nome + '   |   Periodo: ' + periodo, 40, 90);
+  doc.setFontSize(8);
+  doc.text('Emitido em ' + new Date().toLocaleString('pt-BR'), W-40, 90, {align:'right'});
 
-  y = 120;
+  y = 130;
   // Summary boxes
   function box(x, label, val, color) {
     doc.setFillColor(245,246,248); doc.roundedRect(x, y, 150, 60, 6, 6, 'F');
@@ -902,6 +939,8 @@ async function goTo(s) {
   const tb = document.getElementById('tab-'+s);
   if(tb) tb.classList.add('active');
   await renderAll();
+  if(s === 'extrato') renderMetas();
+  if(s === 'perfil') aplicarSalario();
 }
 
 function showToast(msg, color) {
@@ -1008,18 +1047,23 @@ function stopListening() {
 // Entende sua fala usando palavras-chave. Tudo roda no próprio celular.
 
 const PALAVRAS_CATEGORIA = {
-  'Alimentação': ['mercado','supermercado','feira','padaria','açougue','comida','lanche','almoço','almocei','janta','jantar','jantei','café','restaurante','ifood','pizza','hambúrguer','lanchonete','marmita','sorvete','bebida','cerveja','refrigerante','água'],
-  'Transporte': ['gasolina','combustível','álcool','etanol','uber','99','táxi','ônibus','passagem','metrô','estacionamento','pedágio','mecânico','óleo','pneu','moto','carro','bilhete'],
-  'Moradia': ['aluguel','condomínio','luz','energia','água','internet','wifi','gás','iptu','reforma','móvel','faxina','limpeza'],
-  'Saúde': ['farmácia','remédio','médico','consulta','dentista','exame','plano de saúde','hospital','academia','psicólogo','terapia','vacina'],
-  'Lazer': ['cinema','jogo','game','show','festa','viagem','passeio','bar','balada','parque','netflix de lazer','livro','hobby','steam'],
-  'Assinatura': ['netflix','spotify','assinatura','prime','disney','hbo','max','youtube premium','plano','mensalidade','crunchyroll','xbox','playstation plus'],
-  'Educação': ['curso','faculdade','escola','livro','apostila','material','mensalidade escolar','udemy','aula','professor'],
+  'Alimentação': ['mercado','supermercado','sacolão','feira','padaria','açougue','acougue','comida','lanche','lanchei','almoço','almocei','janta','jantar','jantei','café','cafezinho','restaurante','ifood','rappi','pizza','pizzaria','hambúrguer','hamburguer','burger','lanchonete','marmita','marmitex','sorvete','açaí','acai','bebida','cerveja','cervejas','refrigerante','refri','água','agua','salgado','coxinha','pastel','doce','chocolate','bolo','pão','pao','leite','arroz','feijão','feijao','carne','frango','fruta','frutas','verdura','legumes','hortifruti','quentinha','sushi','japonês','japones','churrasco','espetinho','tapioca','pipoca','suco','vitamina','energético','energetico','vinho','taça de vinho','taca de vinho','drink','drinque','whisky','vodka','gin','caipirinha','chopp','chope','dose','mcdonalds','bk','subway','habibs','outback','bobs','giraffas','comida japonesa','self service','rodízio','rodizio','ppr','brunch'],
+  'Transporte': ['gasolina','combustível','combustivel','álcool','alcool','etanol','diesel','abasteci','abastecer','uber','99','indriver','táxi','taxi','mototáxi','mototaxi','moto taxi','ônibus','onibus','busão','busao','passagem','metrô','metro','trem','brt','vlt','estacionamento','pedágio','pedagio','mecânico','mecanico','óleo','oleo','pneu','pneus','carro','bilhete','bilhete único','recarga ônibus','revisão','revisao','lavagem','lava rápido','lava car','funilaria','blablacar','vans','lotação','lotacao','zona azul'],
+  'Moradia': ['aluguel','condomínio','condominio','luz','energia','conta de luz','conta de água','internet','wifi','wi-fi','net','gás','gas','botijão','botijao','iptu','reforma','móvel','movel','móveis','moveis','faxina','faxineira','diarista','limpeza','material de limpeza','sabão','sabao','detergente','vassoura','lâmpada','lampada','encanador','eletricista','pedreiro','pintura','tinta','cama','sofá','sofa','geladeira','fogão','fogao','máquina de lavar','maquina de lavar','microondas','ventilador','ar condicionado','decoração','decoracao','cortina','tapete','utensílios','panela','prato'],
+  'Saúde': ['farmácia','farmacia','drogaria','remédio','remedio','remédios','médico','medico','consulta','dentista','exame','exames','plano de saúde','plano de saude','hospital','clínica','clinica','academia','gym','psicólogo','psicologo','terapia','terapeuta','vacina','fisioterapia','nutricionista','óculos','oculos','lente','lentes','dermatologista','laboratório','laboratorio','ortopedista','vitamina','suplemento','whey','creatina','dipirona','paracetamol','antibiótico','plano odontológico','massagem','pilates','crossfit','personal','dermato'],
+  'Beleza': ['cabelo','corte de cabelo','corte','cabeleireiro','barbeiro','barbearia','salão','salao','manicure','pedicure','unha','unhas','sobrancelha','depilação','depilacao','maquiagem','make','perfume','cosmético','cosmetico','shampoo','condicionador','creme','skincare','estética','estetica','tatuagem','tattoo','progressiva','escova','luzes','spa'],
+  'Vestuário': ['roupa','roupas','camisa','camiseta','calça','calca','bermuda','short','vestido','blusa','casaco','jaqueta','moletom','tênis','tenis','sapato','chinelo','sandália','sandalia','bota','meia','cueca','calcinha','sutiã','sutia','boné','bone','chapéu','chapeu','óculos de sol','bolsa','mochila','carteira','cinto','relógio','relogio','acessório','acessorio','loja de roupa','shopping','renner','riachuelo','cea','zara','nike','adidas','shein'],
+  'Lazer': ['cinema','jogo','game','games','jogos','show','festa','viagem','passeio','bar','balada','parque','livro de lazer','hobby','steam','ingresso','ingressos','evento','teatro','museu','boliche','karaokê','karaoke','viagem de férias','hotel','pousada','airbnb','praia','clube','piscina','passeio turístico','rolê','role','rolezinho','barzinho','boteco','pub','festival'],
+  'Assinatura': ['netflix','spotify','assinatura','prime','amazon prime','disney','disney+','hbo','max','globoplay','paramount','star+','apple tv','youtube premium','mensalidade','crunchyroll','xbox','game pass','playstation plus','psn','deezer','tidal','canva','chatgpt','plano celular','telefonia','tim','vivo','claro','oi','plano de internet'],
+  'Educação': ['curso','faculdade','escola','livro','apostila','material escolar','material','mensalidade escolar','udemy','alura','aula','aulas','professor','particular','idiomas','inglês','ingles','espanhol','prova','vestibular','enem','concurso','certificação','certificacao','workshop','palestra','ebook','caderno','caneta','mochila escolar','matrícula','matricula'],
+  'Pets': ['ração','racao','pet','petshop','pet shop','veterinário','veterinario','vacina pet','cachorro','gato','dog','animal','tosa','banho e tosa','remédio pet','coleira','areia gato','aquário','aquario','passeador'],
+  'Presentes': ['presente','presentes','gift','aniversário','aniversario','lembrança','lembranca','flores','buquê','buque','cartão presente','vale presente'],
+  'Outros': ['outros','diversos','variado','geral']
 };
 
-const FIXO_KEYWORDS = ['aluguel','condomínio','luz','energia','água','internet','wifi','gás','iptu','netflix','spotify','assinatura','plano','mensalidade','academia','prime','disney','hbo','faculdade','escola'];
+const FIXO_KEYWORDS = ['aluguel','condomínio','condominio','luz','energia','conta de luz','água','agua','conta de água','internet','wifi','net','gás','gas','iptu','netflix','spotify','assinatura','plano','mensalidade','academia','gym','prime','disney','hbo','max','faculdade','escola','plano de saúde','plano de saude','plano odontológico','financiamento','prestação','prestacao','parcela','seguro','telefonia','plano celular','globoplay','game pass'];
 
-const RECEITA_KEYWORDS = ['recebi','ganhei','entrou','salário','salario','pagamento','freela','freelance','venda','vendi','pix recebido','rendimento','renda','depósito','depositaram','recebimento','bonus','bônus','comissão'];
+const RECEITA_KEYWORDS = ['recebi','ganhei','entrou','salário','salario','pagamento','paguei não','freela','freelance','freelas','venda','vendi','vendas','pix recebido','recebi um pix','rendimento','rendimentos','renda','depósito','deposito','depositaram','recebimento','bonus','bônus','comissão','comissao','adiantamento','vale','décimo','decimo','13º','férias','ferias','mesada','reembolso','restituição','restituicao','lucro','dividendo','aluguel recebido','caiu na conta','me pagaram','recebimento de','vali','prêmio','premio','ganho','rendeu'];
 
 function numeroPorExtenso(t) {
   const mapa = {'um':1,'uma':1,'dois':2,'duas':2,'três':3,'tres':3,'quatro':4,'cinco':5,'seis':6,'sete':7,'oito':8,'nove':9,'dez':10,'onze':11,'doze':12,'treze':13,'quatorze':14,'catorze':14,'quinze':15,'vinte':20,'trinta':30,'quarenta':40,'cinquenta':50,'sessenta':60,'setenta':70,'oitenta':80,'noventa':90,'cem':100,'cento':100,'duzentos':200,'trezentos':300,'quatrocentos':400,'quinhentos':500,'seiscentos':600,'setecentos':700,'oitocentos':800,'novecentos':900,'mil':1000};
@@ -1065,35 +1109,85 @@ function extrairValor(texto) {
   return null;
 }
 
+// Verifica se a palavra-chave aparece como palavra inteira (não pedaço de outra)
+function contemPalavra(texto, palavra) {
+  // escapa caracteres especiais de regex
+  const esc = palavra.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // \b não funciona bem com acentos; usamos limites por espaço/início/fim/pontuação
+  const re = new RegExp('(^|[^a-zà-ú0-9])' + esc + '($|[^a-zà-ú0-9])', 'i');
+  return re.test(texto);
+}
+
+// Remove os verbos de ação pra não confundir a detecção
+function limparVerbos(texto) {
+  return texto.toLowerCase()
+    .replace(/\b(gastei|gastou|paguei|pagei|comprei|torrei|abasteci|recebi|ganhei|coloquei|botei)\b/gi, ' ');
+}
+
 function detectarCategoria(texto) {
-  const t = texto.toLowerCase();
+  const t = limparVerbos(texto);
+  let melhor = null, melhorLen = 0;
+  // procura a palavra-chave MAIS LONGA que casa (mais específica)
   for(const [cat, palavras] of Object.entries(PALAVRAS_CATEGORIA)) {
     for(const p of palavras) {
-      if(t.includes(p)) return cat;
+      if(contemPalavra(t, p) && p.length > melhorLen) {
+        melhor = cat; melhorLen = p.length;
+      }
     }
   }
-  return 'Outros';
+  return melhor || 'Outros';
 }
 
 function extrairNome(texto, categoria, isReceita) {
-  const t = texto.toLowerCase();
-  // tenta achar a palavra-chave que casou pra usar como nome
+  const t = limparVerbos(texto);
   if(!isReceita) {
+    // pega a palavra-chave mais longa que casa, da categoria detectada
+    let nome = null, len = 0;
     for(const p of (PALAVRAS_CATEGORIA[categoria]||[])) {
-      if(t.includes(p)) return p.charAt(0).toUpperCase() + p.slice(1);
+      if(contemPalavra(t, p) && p.length > len) { nome = p; len = p.length; }
     }
+    if(nome) return nome.charAt(0).toUpperCase() + nome.slice(1);
+    return categoria;
   } else {
     for(const p of RECEITA_KEYWORDS) {
-      if(t.includes(p)) {
+      if(contemPalavra(t, p)) {
         if(['salário','salario'].includes(p)) return 'Salário';
-        if(['freela','freelance'].includes(p)) return 'Freelance';
-        if(['venda','vendi'].includes(p)) return 'Venda';
+        if(['freela','freelance','freelas'].includes(p)) return 'Freelance';
+        if(['venda','vendi','vendas'].includes(p)) return 'Venda';
+        if(['férias','ferias'].includes(p)) return 'Férias';
+        if(['13º','décimo','decimo'].includes(p)) return '13º salário';
         return 'Receita';
       }
     }
     return 'Receita';
   }
-  return categoria;
+}
+
+// Separa uma fala em vários lançamentos: "gastei 40 no corte, 35 no mercado e 20 no vinho"
+function separarLancamentos(texto) {
+  let t = texto.trim();
+  // Quebra " e " só quando vem um VERBO depois (não em "trinta e cinco")
+  t = t.replace(/\s+e\s+(?=gastei|paguei|comprei|recebi|ganhei|torrei|abasteci|gastou)/gi, ' | ');
+  t = t.replace(/\s+também\s+/gi, ' | ');
+  // quebra por vírgula, ponto-e-vírgula, barra, ou repetição dos verbos
+  let partes = t.split(/\s*[,;|]\s*|\s+(?=gastei|paguei|comprei|recebi|ganhei|torrei|abasteci)/i);
+  // mantém só partes que têm algum número (dígito ou por extenso)
+  partes = partes.map(p => p.trim()).filter(p => p.length > 0 && /\d|\bum\b|\buma\b|dois|duas|três|tres|quatro|cinco|seis|sete|oito|nove|dez|onze|doze|treze|quatorze|catorze|quinze|dezesseis|dezessete|dezoito|dezenove|vinte|trinta|quarenta|cinquenta|sessenta|setenta|oitenta|noventa|cem|cento|duzentos|trezentos|quatrocentos|quinhentos|mil/i.test(p));
+  return partes.length > 0 ? partes : [texto];
+}
+
+function classificarItem(frase) {
+  const t = frase.toLowerCase();
+  const valor = extrairValor(frase);
+  if(!valor) return null;
+  const isReceita = RECEITA_KEYWORDS.some(p => contemPalavra(t, p));
+  if(isReceita) {
+    return { fluxo:'receita', valor, categoria:'Receita', tipo:'', nome: extrairNome(frase, null, true) };
+  }
+  const categoria = detectarCategoria(frase);
+  const nome = extrairNome(frase, categoria, false);
+  const tipo = FIXO_KEYWORDS.some(p => contemPalavra(limparVerbos(frase), p)) ? 'Fixo' : 'Variável';
+  return { fluxo:'gasto', valor, categoria, tipo, nome };
 }
 
 async function processExpense(text) {
@@ -1103,7 +1197,7 @@ async function processExpense(text) {
   const t = (text || '').toLowerCase().trim();
 
   // Pergunta de resumo?
-  if(t.includes('resumo') || t.includes('quanto') || t.includes('total') || t.includes('saldo')) {
+  if((t.includes('resumo') || t.includes('quanto') || t.includes('saldo')) && !/gastei|paguei|comprei|recebi|ganhei/.test(t)) {
     const all = await loadData();
     const gastos = all.filter(e=>e.fluxo!=='receita').reduce((s,e)=>s+Number(e.valor),0);
     const receitas = all.filter(e=>e.fluxo==='receita').reduce((s,e)=>s+Number(e.valor),0);
@@ -1112,34 +1206,231 @@ async function processExpense(text) {
     return;
   }
 
-  const valor = extrairValor(text);
-  if(!valor) {
+  // UPGRADE: separa em vários lançamentos
+  const frases = separarLancamentos(text);
+  const itens = [];
+  let baseId = Date.now();
+  for(const frase of frases) {
+    const item = classificarItem(frase);
+    if(item) {
+      item.id = baseId++;
+      item.data = new Date().toLocaleDateString('pt-BR');
+      itens.push(item);
+    }
+  }
+
+  if(itens.length === 0) {
     out.innerHTML = '<div class="ai-response"><div class="ai-tag">NOGARI IA</div><div class="ai-text" style="color:var(--red)">Não entendi o valor. Tente: "gastei 40 reais no mercado"</div></div>';
     return;
   }
 
-  const isReceita = RECEITA_KEYWORDS.some(p => t.includes(p));
-
-  if(isReceita) {
-    const nome = extrairNome(text, null, true);
-    await addTransaction({nome, valor, categoria:'Receita', tipo:'', fluxo:'receita', data:new Date().toLocaleDateString('pt-BR'), id:Date.now()});
-    await renderAll();
-    out.innerHTML = `<div class="ai-response"><div class="ai-tag">NOGARI IA</div><div class="ai-text">💵 Receita registrada!<br><b>${nome}</b> — <b style="color:var(--teal)">+${fmt(valor)}</b></div></div>`;
-    showToast('💵 ' + nome + ' salvo!', 'var(--teal)');
-    return;
+  // Salva todos
+  for(const item of itens) {
+    await addTransaction({nome:item.nome, valor:item.valor, categoria:item.categoria, tipo:item.tipo, fluxo:item.fluxo, data:item.data, id:item.id});
   }
-
-  const categoria = detectarCategoria(text);
-  const nome = extrairNome(text, categoria, false);
-  const tipo = FIXO_KEYWORDS.some(p => t.includes(p)) ? 'Fixo' : 'Variável';
-
-  await addTransaction({nome, valor, categoria, tipo, fluxo:'gasto', data:new Date().toLocaleDateString('pt-BR'), id:Date.now()});
   await renderAll();
-  out.innerHTML = `<div class="ai-response"><div class="ai-tag">NOGARI IA</div><div class="ai-text">✓ Registrado!<br><b>${nome}</b> — <b style="color:var(--red)">-${fmt(valor)}</b><br><span style="color:var(--gray);font-size:13px">${categoria} • ${tipo}</span></div></div>`;
-  showToast('✓ ' + nome + ' salvo!', 'var(--teal)');
+
+  // Monta resposta
+  if(itens.length === 1) {
+    const it = itens[0];
+    if(it.fluxo === 'receita') {
+      out.innerHTML = `<div class="ai-response"><div class="ai-tag">NOGARI IA</div><div class="ai-text">💵 Receita registrada!<br><b>${it.nome}</b> — <b style="color:var(--teal)">+${fmt(it.valor)}</b></div></div>`;
+    } else {
+      out.innerHTML = `<div class="ai-response"><div class="ai-tag">NOGARI IA</div><div class="ai-text">✓ Registrado!<br><b>${it.nome}</b> — <b style="color:var(--red)">-${fmt(it.valor)}</b><br><span style="color:var(--gray);font-size:13px">${it.categoria} • ${it.tipo}</span></div></div>`;
+    }
+    showToast('✓ ' + it.nome + ' salvo!', 'var(--teal)');
+  } else {
+    const linhas = itens.map(it => {
+      const sinal = it.fluxo === 'receita' ? '+' : '-';
+      const cor = it.fluxo === 'receita' ? 'var(--teal)' : 'var(--red)';
+      const ic = it.fluxo === 'receita' ? '💵' : (catIcons[it.categoria]||'💰');
+      return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid var(--border2)"><span>${ic} ${it.nome} <span style="color:var(--gray);font-size:11px">${it.fluxo==='receita'?'Receita':it.categoria}</span></span><b style="color:${cor}">${sinal}${fmt(it.valor)}</b></div>`;
+    }).join('');
+    out.innerHTML = `<div class="ai-response"><div class="ai-tag">NOGARI IA</div><div class="ai-text"><b>${itens.length} registros salvos!</b>${linhas}</div></div>`;
+    showToast('✓ ' + itens.length + ' registros salvos!', 'var(--teal)');
+  }
 }
 
 
+// ── Metas de poupança + Salário ─────────────────────────────────────────────
+const METAS_KEY = 'nogari_metas';
+const SALARIO_KEY = 'nogari_salario';
+
+function loadMetas() {
+  try { return JSON.parse(localStorage.getItem(METAS_KEY) || '[]'); } catch(_) { return []; }
+}
+function saveMetas(arr) {
+  try { localStorage.setItem(METAS_KEY, JSON.stringify(arr)); } catch(_){}
+}
+function loadSalario() {
+  const v = localStorage.getItem(SALARIO_KEY);
+  return v ? Number(v) : 0;
+}
+
+function openSalarioModal() {
+  const s = loadSalario();
+  document.getElementById('salario-input').value = s > 0 ? s : '';
+  document.getElementById('salario-modal').classList.add('show');
+}
+function saveSalario() {
+  const v = parseFloat(document.getElementById('salario-input').value);
+  if(!v || v <= 0) { showToast('Digite um valor válido', 'var(--red)'); return; }
+  localStorage.setItem(SALARIO_KEY, v);
+  document.getElementById('salario-modal').classList.remove('show');
+  aplicarSalario();
+  showToast('💰 Salário salvo!', 'var(--teal)');
+}
+function aplicarSalario() {
+  const s = loadSalario();
+  const el = document.getElementById('perfil-salario');
+  if(el) el.textContent = s > 0 ? fmt(s) : 'Não cadastrado';
+}
+
+function openMetaModal(id) {
+  document.getElementById('meta-id').value = id || '';
+  document.getElementById('meta-previsao').style.display = 'none';
+  document.getElementById('meta-del-btn').style.display = id ? '' : 'none';
+  if(id) {
+    const m = loadMetas().find(x => x.id === id);
+    if(m) {
+      document.getElementById('meta-nome').value = m.nome;
+      document.getElementById('meta-alvo').value = m.alvo;
+      document.getElementById('meta-atual').value = m.atual;
+      document.getElementById('meta-modo').value = m.modo;
+      document.getElementById('meta-mensal').value = m.mensal || '';
+      document.getElementById('meta-percent').value = m.percent || '';
+      toggleMetaModo(m.modo);
+    }
+  } else {
+    document.getElementById('meta-nome').value = '';
+    document.getElementById('meta-alvo').value = '';
+    document.getElementById('meta-atual').value = '';
+    document.getElementById('meta-modo').value = 'fixo';
+    document.getElementById('meta-mensal').value = '';
+    document.getElementById('meta-percent').value = '';
+    toggleMetaModo('fixo');
+  }
+  document.getElementById('meta-modal').classList.add('show');
+}
+function toggleMetaModo(modo) {
+  document.getElementById('meta-campo-fixo').style.display = modo === 'fixo' ? 'block' : 'none';
+  document.getElementById('meta-campo-percent').style.display = modo === 'percent' ? 'block' : 'none';
+}
+
+function valorMensalDaMeta() {
+  const modo = document.getElementById('meta-modo').value;
+  if(modo === 'fixo') {
+    return parseFloat(document.getElementById('meta-mensal').value) || 0;
+  } else {
+    const sal = loadSalario();
+    const pct = parseFloat(document.getElementById('meta-percent').value) || 0;
+    return sal * (pct / 100);
+  }
+}
+
+function calcularPrevisao() {
+  const alvo = parseFloat(document.getElementById('meta-alvo').value) || 0;
+  const atual = parseFloat(document.getElementById('meta-atual').value) || 0;
+  const mensal = valorMensalDaMeta();
+  const prev = document.getElementById('meta-previsao');
+  prev.style.display = 'block';
+
+  if(document.getElementById('meta-modo').value === 'percent' && loadSalario() <= 0) {
+    prev.innerHTML = '⚠️ Cadastre seu salário no Perfil primeiro pra calcular por porcentagem.';
+    return;
+  }
+  if(alvo <= 0 || mensal <= 0) {
+    prev.innerHTML = '⚠️ Preencha o objetivo e o valor mensal.';
+    return;
+  }
+  const falta = Math.max(0, alvo - atual);
+  if(falta === 0) {
+    prev.innerHTML = '🎉 Você já atingiu essa meta!';
+    return;
+  }
+  const meses = Math.ceil(falta / mensal);
+  const anos = Math.floor(meses / 12);
+  const restoMeses = meses % 12;
+  let tempoTxt = '';
+  if(anos > 0) tempoTxt = anos + (anos===1?' ano':' anos') + (restoMeses>0 ? ' e ' + restoMeses + (restoMeses===1?' mês':' meses') : '');
+  else tempoTxt = meses + (meses===1?' mês':' meses');
+
+  const dataAlvo = new Date();
+  dataAlvo.setMonth(dataAlvo.getMonth() + meses);
+  const dataTxt = dataAlvo.toLocaleDateString('pt-BR', {month:'long', year:'numeric'});
+
+  prev.innerHTML = `<div style="color:var(--white);font-weight:600;margin-bottom:6px">📊 Previsão</div>
+    Guardando <b style="color:var(--teal)">${fmt(mensal)}/mês</b>, você atinge <b style="color:var(--white)">${fmt(alvo)}</b> em:<br>
+    <span style="font-size:18px;color:var(--blue);font-weight:700">${tempoTxt}</span><br>
+    <span style="font-size:12px">Previsão: ${dataTxt} • Faltam ${fmt(falta)}</span>`;
+}
+
+function saveMeta() {
+  const nome = document.getElementById('meta-nome').value.trim();
+  const alvo = parseFloat(document.getElementById('meta-alvo').value) || 0;
+  const atual = parseFloat(document.getElementById('meta-atual').value) || 0;
+  const modo = document.getElementById('meta-modo').value;
+  const mensal = parseFloat(document.getElementById('meta-mensal').value) || 0;
+  const percent = parseFloat(document.getElementById('meta-percent').value) || 0;
+  if(!nome || alvo <= 0) { showToast('Preencha nome e objetivo', 'var(--red)'); return; }
+
+  const id = document.getElementById('meta-id').value;
+  let metas = loadMetas();
+  if(id) {
+    metas = metas.map(m => m.id === id ? {...m, nome, alvo, atual, modo, mensal, percent} : m);
+  } else {
+    metas.push({id:'m'+Date.now(), nome, alvo, atual, modo, mensal, percent});
+  }
+  saveMetas(metas);
+  document.getElementById('meta-modal').classList.remove('show');
+  renderMetas();
+  showToast('🎯 Meta salva!', 'var(--teal)');
+}
+function deleteMeta() {
+  const id = document.getElementById('meta-id').value;
+  if(id && confirm('Excluir esta meta?')) {
+    saveMetas(loadMetas().filter(m => m.id !== id));
+    document.getElementById('meta-modal').classList.remove('show');
+    renderMetas();
+    showToast('Meta excluída', 'var(--gray)');
+  }
+}
+
+function metaValorMensal(m) {
+  if(m.modo === 'fixo') return m.mensal || 0;
+  const sal = loadSalario();
+  return sal * ((m.percent || 0) / 100);
+}
+
+function renderMetas() {
+  const cont = document.getElementById('metas-list');
+  if(!cont) return;
+  const metas = loadMetas();
+  if(metas.length === 0) {
+    cont.innerHTML = '<div class="empty-state" style="padding:20px">Nenhuma meta ainda.<br>Toque em "+ Nova meta" pra criar uma!</div>';
+    return;
+  }
+  cont.innerHTML = metas.map(m => {
+    const pct = m.alvo > 0 ? Math.min(100, Math.round((m.atual / m.alvo) * 100)) : 0;
+    const mensal = metaValorMensal(m);
+    const falta = Math.max(0, m.alvo - m.atual);
+    let infoTempo = '';
+    if(mensal > 0 && falta > 0) {
+      const meses = Math.ceil(falta / mensal);
+      const anos = Math.floor(meses/12), rm = meses%12;
+      let tt = anos>0 ? anos+'a'+(rm>0?' '+rm+'m':'') : meses+(meses===1?' mês':' meses');
+      infoTempo = `<div style="font-size:11px;color:var(--blue);margin-top:6px">⏱️ ${tt} guardando ${fmt(mensal)}/mês</div>`;
+    } else if(falta === 0) {
+      infoTempo = '<div style="font-size:11px;color:var(--teal);margin-top:6px">🎉 Meta atingida!</div>';
+    }
+    return `<div class="savings-card" style="cursor:pointer" onclick="openMetaModal('${m.id}')">
+      <div class="savings-top"><div class="savings-name">${m.nome}</div><div class="savings-pct">${pct}%</div></div>
+      <div class="savings-bar"><div class="savings-fill" style="width:${pct}%"></div></div>
+      <div class="savings-vals"><div class="savings-curr">${fmt(m.atual)}</div><div class="savings-target">Meta: ${fmt(m.alvo)}</div></div>
+      ${infoTempo}
+    </div>`;
+  }).join('');
+}
 
 // ── Face ID / WebAuthn ─────────────────────────────────────────────────────
 const CRED_KEY = 'nogari_webauthn_cred';
@@ -1278,7 +1569,7 @@ window.addEventListener('load', () => {
 });
 
 setGreeting();
-(async()=>{ await applyProfile(); await renderAll(); })();
+(async()=>{ await applyProfile(); await renderAll(); renderMetas(); aplicarSalario(); })();
 </script>
 </body>
 </html>
