@@ -161,20 +161,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
 .es-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:14px;padding:12px 10px;text-align:center}
 .es-label{font-size:10px;color:var(--gray);margin-bottom:4px}
 .es-val{font-size:14px;font-weight:700}
-.empty-state{text-align:center;padding:32px 20px;color:var(--gray);font-size:14px}
+.lock-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.lock-logo{font-size:28px;font-weight:800;letter-spacing:2px;margin-bottom:8px;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.lock-sub{font-size:13px;color:var(--gray);margin-bottom:48px}
+.lock-face-ring{width:90px;height:90px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;margin-bottom:20px;transition:border-color 0.3s}
+.lock-face-ring.scanning{border-color:var(--blue);animation:pulse 1.5s infinite}
+.lock-face-ring.success{border-color:var(--teal)}
+.lock-face-ring.error{border-color:var(--red)}
+.lock-face-icon{font-size:42px;line-height:1}
+.lock-btn{margin-top:8px;background:linear-gradient(135deg,var(--blue),var(--purple));border:none;border-radius:16px;padding:15px 40px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;transition:opacity 0.15s}
+.lock-btn:active{opacity:0.85}
+.lock-status{font-size:13px;color:var(--gray);margin-top:14px;min-height:18px;text-align:center}
 </style>
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-<div id="app">
+<div id="lock-overlay" class="lock-overlay">
+  <div class="lock-logo">NOGARI</div>
+  <div class="lock-sub">Seu banco pessoal</div>
+  <div class="lock-face-ring" id="lock-ring">
+    <div class="lock-face-icon">🔒</div>
+  </div>
+  <button class="lock-btn" id="lock-btn" onclick="autenticar()">Desbloquear com Face ID</button>
+  <div class="lock-status" id="lock-status"></div>
+</div>
+
+<div id="app" style="display:none">
 
   <div id="screen-home" class="screen active">
     <div class="topbar">
       <div>
         <div style="font-size:12px;color:var(--gray);margin-bottom:2px" id="greeting">Bom dia,</div>
-        <div style="font-size:18px;font-weight:700" id="user-name-home">Rafael Nogari</div>
+        <div style="font-size:18px;font-weight:700" id="user-name-home">Kauã Henrique Nogari Sabia</div>
       </div>
       <div style="display:flex;align-items:center;gap:12px">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gray)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -196,12 +216,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
         </div>
         <div class="qa-label">Extrato</div>
       </div>
-      <div class="qa" onclick="goTo('cartoes')">
-        <div class="qa-icon" style="background:rgba(167,139,250,0.12)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-        </div>
-        <div class="qa-label">Cartões</div>
-      </div>
+
       <div class="qa" onclick="goTo('assistente')">
         <div class="qa-icon" style="background:rgba(110,231,199,0.12)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
@@ -296,37 +311,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
     </div>
   </div>
 
-  <div id="screen-cartoes" class="screen">
-    <div class="topbar"><div class="topbar-title">Cartões</div></div>
-    <div style="padding:14px 16px 0">
-      <div class="credit-card">
-        <div class="cc-accent"></div><div class="cc-accent2"></div>
-        <div class="cc-top"><div><div class="cc-bank">NOGARI</div><div style="font-size:11px;color:var(--blue);margin-top:2px">Black</div></div><div class="cc-chip"></div></div>
-        <div class="cc-number">•••• •••• •••• 4821</div>
-        <div class="cc-bottom"><div><div class="cc-holder">Rafael Nogari</div><div class="cc-exp">Val: 09/28</div></div><div style="font-size:20px;font-weight:700;color:var(--blue)">VISA</div></div>
-      </div>
-      <div class="limit-box">
-        <div class="limit-row"><div class="limit-label">Fatura atual</div><div class="limit-val" style="color:var(--red)">R$ 1.840,00</div></div>
-        <div class="limit-row"><div class="limit-label">Disponível</div><div class="limit-val" style="color:var(--teal)">R$ 3.160,00</div></div>
-        <div class="limit-bar"><div class="limit-fill" style="width:37%"></div></div>
-        <div class="limit-row"><div class="limit-label">Limite total</div><div class="limit-val">R$ 5.000,00</div></div>
-        <div style="font-size:12px;color:var(--gray);margin-top:4px">Vencimento: 10 julho 2025</div>
-      </div>
-      <div class="credit-card" style="background:var(--bg4)">
-        <div class="cc-accent" style="border-color:rgba(110,231,199,0.3)"></div>
-        <div class="cc-top"><div><div class="cc-bank">NOGARI</div><div style="font-size:11px;color:var(--teal);margin-top:2px">Gold</div></div><div class="cc-chip"></div></div>
-        <div class="cc-number">•••• •••• •••• 9034</div>
-        <div class="cc-bottom"><div><div class="cc-holder">Rafael Nogari</div><div class="cc-exp">Val: 03/27</div></div><div style="font-size:20px;font-weight:700;color:var(--teal)">MASTER</div></div>
-      </div>
-    </div>
-  </div>
-
   <div id="screen-perfil" class="screen">
     <div class="topbar"><div class="topbar-title">Perfil</div></div>
     <div class="profile-header">
       <div class="profile-avatar" id="perfil-avatar">RN</div>
-      <div class="profile-name" id="perfil-name">Rafael Nogari</div>
-      <div class="profile-email" id="perfil-email">rafael@nogari.com</div>
+      <div class="profile-name" id="perfil-name">Kauã Henrique Nogari Sabia</div>
+      <div class="profile-email" id="perfil-email">kaua@nogari.com</div>
       <div class="badge">Plano Premium</div>
     </div>
     <div class="stats-grid">
@@ -378,10 +368,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
     </div>
     <div class="tab-center" onclick="goTo('assistente')">
       <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-    </div>
-    <div class="tab" id="tab-cartoes" onclick="goTo('cartoes')">
-      <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-      <span class="tab-label">Cartões</span>
     </div>
     <div class="tab" id="tab-perfil" onclick="goTo('perfil')">
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -474,7 +460,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
 <div class="toast" id="toast"></div>
 
 <script>
-const SCREENS = ['home','extrato','assistente','cartoes','perfil'];
+const SCREENS = ['home','extrato','assistente','perfil'];
 const catIcons = {Alimentação:'🛒',Transporte:'🚗',Moradia:'🏠',Saúde:'❤️',Lazer:'🎮',Assinatura:'📱',Educação:'📚',Outros:'💰'};
 const catBg = {Alimentação:'rgba(110,231,199,0.1)',Transporte:'rgba(110,231,199,0.1)',Moradia:'rgba(126,184,247,0.1)',Saúde:'rgba(248,113,113,0.1)',Lazer:'rgba(167,139,250,0.1)',Assinatura:'rgba(167,139,250,0.1)',Educação:'rgba(126,184,247,0.1)',Outros:'rgba(156,163,175,0.1)'};
 let recognition = null;
@@ -556,11 +542,11 @@ async function loadProfile() {
     return new Promise((resolve) => {
       const tx = db.transaction('profile','readonly');
       const req = tx.objectStore('profile').get('user');
-      req.onsuccess = () => resolve(req.result ? req.result.data : {nome:'Kauã Nogari',email:'kaua@nogari.com'});
-      req.onerror = () => resolve({nome:'Kauã Nogari',email:'kaua@nogari.com'});
+      req.onsuccess = () => resolve(req.result ? req.result.data : {nome:'Kauã Henrique Nogari Sabia',email:'kaua@nogari.com'});
+      req.onerror = () => resolve({nome:'Kauã Henrique Nogari Sabia',email:'kaua@nogari.com'});
     });
   } catch(e) {
-    try { return JSON.parse(localStorage.getItem('nogari_profile') || '{"nome":"Kauã Nogari","email":"kaua@nogari.com"}'); } catch(_){ return {nome:'Kauã Nogari',email:'kaua@nogari.com'}; }
+    try { return JSON.parse(localStorage.getItem('nogari_profile') || '{"nome":"Kauã Henrique Nogari Sabia","email":"kaua@nogari.com"}'); } catch(_){ return {nome:'Kauã Henrique Nogari Sabia',email:'kaua@nogari.com'}; }
   }
 }
 async function saveProfile2(p) {
@@ -1153,6 +1139,143 @@ async function processExpense(text) {
   showToast('✓ ' + nome + ' salvo!', 'var(--teal)');
 }
 
+
+
+// ── Face ID / WebAuthn ─────────────────────────────────────────────────────
+const CRED_KEY = 'nogari_webauthn_cred';
+
+function b64url(buffer) {
+  return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+function fromB64url(str) {
+  str = str.replace(/-/g,'+').replace(/_/g,'/');
+  const bin = atob(str);
+  const buf = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) buf[i]=bin.charCodeAt(i);
+  return buf.buffer;
+}
+
+async function registrarFaceID() {
+  const status = document.getElementById('lock-status');
+  const ring = document.getElementById('lock-ring');
+  try {
+    ring.className = 'lock-face-ring scanning';
+    status.textContent = 'Registrando Face ID...';
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+    const cred = await navigator.credentials.create({
+      publicKey: {
+        challenge,
+        rp: { name: 'NOGARI Bank' },
+        user: { id: new Uint8Array(16), name: 'user', displayName: 'Usuário' },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
+        timeout: 60000
+      }
+    });
+    localStorage.setItem(CRED_KEY, JSON.stringify({ id: b64url(cred.rawId) }));
+    ring.className = 'lock-face-ring success';
+    ring.querySelector('.lock-face-icon').textContent = '😊';
+    status.textContent = 'Face ID registrado! Desbloqueando...';
+    setTimeout(desbloquear, 800);
+  } catch(e) {
+    ring.className = 'lock-face-ring error';
+    status.textContent = 'Não foi possível registrar. Tente novamente.';
+    document.getElementById('lock-btn').textContent = 'Tentar novamente';
+    document.getElementById('lock-btn').onclick = autenticar;
+  }
+}
+
+async function autenticar() {
+  const status = document.getElementById('lock-status');
+  const ring = document.getElementById('lock-ring');
+  const btn = document.getElementById('lock-btn');
+
+  if(!window.PublicKeyCredential) {
+    status.textContent = 'Face ID não suportado neste dispositivo.';
+    btn.textContent = 'Entrar sem bloqueio';
+    btn.onclick = desbloquear;
+    return;
+  }
+
+  const savedRaw = localStorage.getItem(CRED_KEY);
+  if(!savedRaw) {
+    // Primeiro uso: registrar
+    btn.style.display = 'none';
+    status.textContent = 'Primeiro acesso — vamos configurar o Face ID';
+    setTimeout(registrarFaceID, 600);
+    return;
+  }
+
+  try {
+    const saved = JSON.parse(savedRaw);
+    ring.className = 'lock-face-ring scanning';
+    status.textContent = 'Aguardando Face ID...';
+    btn.disabled = true;
+
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+    await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        allowCredentials: [{ type: 'public-key', id: fromB64url(saved.id) }],
+        userVerification: 'required',
+        timeout: 60000
+      }
+    });
+
+    ring.className = 'lock-face-ring success';
+    ring.querySelector('.lock-face-icon').textContent = '✓';
+    status.textContent = 'Autenticado!';
+    setTimeout(desbloquear, 500);
+
+  } catch(e) {
+    ring.className = 'lock-face-ring error';
+    ring.querySelector('.lock-face-icon').textContent = '🔒';
+    status.textContent = 'Face ID falhou. Tente novamente.';
+    btn.disabled = false;
+    btn.textContent = 'Tentar novamente';
+  }
+}
+
+let _appUnlocked = false;
+function desbloquear() {
+  document.getElementById('lock-overlay').style.display = 'none';
+  const appEl = document.getElementById('app');
+  appEl.style.display = 'flex';
+  appEl.style.flexDirection = 'column';
+  appEl.style.height = '100%';
+  _appUnlocked = true;
+}
+
+function rebloquear() {
+  const ov = document.getElementById('lock-overlay');
+  ov.style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  const ring = document.getElementById('lock-ring');
+  ring.className = 'lock-face-ring';
+  ring.querySelector('.lock-face-icon').textContent = '🔒';
+  document.getElementById('lock-status').textContent = '';
+  const btn = document.getElementById('lock-btn');
+  btn.style.display = '';
+  btn.disabled = false;
+  btn.textContent = 'Desbloquear com Face ID';
+  btn.onclick = autenticar;
+  _appUnlocked = false;
+}
+
+// Quando o app volta do segundo plano, exige Face ID de novo (igual app de banco)
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && _appUnlocked && localStorage.getItem(CRED_KEY)) {
+    rebloquear();
+    setTimeout(() => autenticar(), 300);
+  }
+});
+
+// Iniciar bloqueio ao carregar
+window.addEventListener('load', () => {
+  // Pequeno delay para o app estar pronto
+  setTimeout(() => autenticar(), 300);
+});
 
 setGreeting();
 (async()=>{ await applyProfile(); await renderAll(); })();
