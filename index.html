@@ -234,11 +234,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
     <div class="topbar">
       <div>
         <div style="font-size:12px;color:var(--gray);margin-bottom:2px" id="greeting">Bom dia,</div>
-        <div style="font-size:18px;font-weight:700" id="user-name-home">Kauã Henrique Nogari Sabia</div>
+        <div style="font-size:18px;font-weight:700" id="user-name-home">Bem-vindo 👋</div>
       </div>
       <div style="display:flex;align-items:center;gap:12px">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gray)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <div class="avatar" id="avatar-initials">RN</div>
+        <div class="avatar" id="avatar-initials">🙂</div>
       </div>
     </div>
 
@@ -250,6 +250,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
     </div>
 
     <div id="lembretes-banner"></div>
+    <div id="comparativo-card"></div>
 
     <div class="quick-actions">
       <div class="qa" onclick="goTo('extrato')">
@@ -342,9 +343,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
       </div>
       <div class="chip-row">
         <div class="chip" style="color:var(--blue);background:rgba(126,184,247,0.1);border-color:rgba(126,184,247,0.3)" onclick="quickPrompt('gastei 45 reais no mercado')">Mercado R$45</div>
-        <div class="chip" style="color:var(--purple);background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3)" onclick="quickPrompt('paguei 120 de combustível')">Combustível R$120</div>
-        <div class="chip" style="color:var(--teal);background:rgba(110,231,199,0.1);border-color:rgba(110,231,199,0.3)" onclick="quickPrompt('qual meu resumo de gastos')">Ver resumo</div>
-        <div class="chip" style="color:var(--red);background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3)" onclick="quickPrompt('paguei conta de luz 85 reais')">Luz R$85</div>
+        <div class="chip" style="color:var(--purple);background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3)" onclick="quickPrompt('quanto gastei com comida esse mês')">Quanto com comida?</div>
+        <div class="chip" style="color:var(--teal);background:rgba(110,231,199,0.1);border-color:rgba(110,231,199,0.3)" onclick="quickPrompt('qual meu maior gasto')">Maior gasto</div>
+        <div class="chip" style="color:var(--red);background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3)" onclick="quickPrompt('quanto sobrou')">Quanto sobrou?</div>
       </div>
       <div id="ai-output"></div>
       <div id="registered-expenses"></div>
@@ -354,12 +355,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
   <div id="screen-perfil" class="screen">
     <div class="topbar"><div class="topbar-title">Perfil</div></div>
     <div class="profile-header">
-      <div class="profile-avatar" id="perfil-avatar" onclick="document.getElementById('foto-input').click()">RN
+      <div class="profile-avatar" id="perfil-avatar" onclick="document.getElementById('foto-input').click()">🙂
         <div class="profile-avatar-edit">📷</div>
       </div>
       <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="uploadFoto(event)">
-      <div class="profile-name" id="perfil-name">Kauã Henrique Nogari Sabia</div>
-      <div class="profile-email" id="perfil-email">kaua@nogari.com</div>
+      <div class="profile-name" id="perfil-name">Seu nome</div>
+      <div class="profile-email" id="perfil-email">Toque pra cadastrar</div>
       <div class="badge">Plano Premium</div>
     </div>
     <div class="stats-grid">
@@ -466,6 +467,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,san
     <div class="field"><label>Tipo</label>
       <select id="input-tipo"><option value="Variável">Variável</option><option value="Fixo">Fixo</option></select>
     </div>
+    </div>
+    <div class="field"><label>Tags <span style="color:var(--gray2);font-weight:400">(opcional, separe por vírgula)</span></label><input type="text" id="input-tags" placeholder="Ex: trabalho, viagem SP, rolê"></div>
+    <div class="field" id="dividir-field">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="checkbox" id="input-dividir" onchange="toggleDividir(this.checked)" style="width:auto">
+        <span>Dividir esse gasto com alguém</span>
+      </label>
+      <div id="dividir-opts" style="display:none;margin-top:10px;background:var(--bg3);border-radius:12px;padding:12px">
+        <div style="font-size:12px;color:var(--gray);margin-bottom:8px">Quanto é a SUA parte? O extrato vai registrar só ela.</div>
+        <input type="number" id="input-minha-parte" placeholder="Sua parte (R$)" inputmode="decimal" step="0.01" style="width:100%;background:var(--bg);border:0.5px solid var(--border2);border-radius:10px;padding:10px 12px;color:var(--white);font-size:14px">
+        <div id="dividir-hint" style="font-size:11px;color:var(--gray2);margin-top:6px"></div>
+      </div>
     </div>
     <button class="btn-primary" id="btn-registrar" onclick="saveManualExpense()">Registrar gasto</button>
     <button class="btn-ghost" onclick="document.getElementById('add-modal').classList.remove('show')">Cancelar</button>
@@ -716,11 +729,11 @@ async function loadProfile() {
     return new Promise((resolve) => {
       const tx = db.transaction('profile','readonly');
       const req = tx.objectStore('profile').get('user');
-      req.onsuccess = () => resolve(req.result ? req.result.data : {nome:'Kauã Henrique Nogari Sabia',email:'kaua@nogari.com'});
-      req.onerror = () => resolve({nome:'Kauã Henrique Nogari Sabia',email:'kaua@nogari.com'});
+      req.onsuccess = () => resolve(req.result ? req.result.data : {nome:'',email:''});
+      req.onerror = () => resolve({nome:'',email:''});
     });
   } catch(e) {
-    try { return JSON.parse(localStorage.getItem('nogari_profile') || '{"nome":"Kauã Henrique Nogari Sabia","email":"kaua@nogari.com"}'); } catch(_){ return {nome:'Kauã Henrique Nogari Sabia',email:'kaua@nogari.com'}; }
+    try { return JSON.parse(localStorage.getItem('nogari_profile') || '{"nome":"","email":""}'); } catch(_){ return {nome:'',email:''}; }
   }
 }
 async function saveProfile2(p) {
@@ -871,14 +884,17 @@ function setGreeting() {
 }
 
 function getInitials(name) {
-  return name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  if(!name || !name.trim()) return '🙂';
+  return name.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
 }
 
 async function applyProfile() {
   const p = await loadProfile();
-  document.getElementById('user-name-home').textContent = p.nome;
-  document.getElementById('perfil-name').textContent = p.nome;
-  document.getElementById('perfil-email').textContent = p.email;
+  const temNome = p.nome && p.nome.trim();
+  // Home: saudação personalizada só com primeiro nome
+  document.getElementById('user-name-home').textContent = temNome ? p.nome.trim().split(/\s+/)[0] : 'Bem-vindo 👋';
+  document.getElementById('perfil-name').textContent = temNome ? p.nome : 'Seu nome';
+  document.getElementById('perfil-email').textContent = (p.email && p.email.trim()) ? p.email : 'Toque pra cadastrar';
 
   const foto = localStorage.getItem('nogari_foto');
   const ini = getInitials(p.nome);
@@ -1027,6 +1043,7 @@ async function renderAll() {
       <div class="tx-info">
         <div class="tx-name">${e.nome}</div>
         <div class="tx-cat">${isReceita ? 'Receita' : e.categoria}${e.tipo ? ' • ' + e.tipo : ''} • ${e.data}</div>
+        ${e.tags && e.tags.length ? `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">${e.tags.map(tg=>`<span style="font-size:10px;background:rgba(167,139,250,0.15);color:var(--purple);border-radius:6px;padding:2px 7px">#${tg}</span>`).join('')}</div>` : ''}
       </div>
       <div class="tx-amount ${isReceita ? 'pos' : 'neg'}">${isReceita ? '+' : '-'}${fmt(e.valor)}</div>
       ${actions}
@@ -1055,6 +1072,7 @@ async function renderAll() {
         </div>`;
       }).join('')
     : '';
+  if(document.getElementById('comparativo-card')) renderComparativo();
 }
 
 async function confirmDelete(id) {
@@ -1132,6 +1150,22 @@ async function deleteTxFromEdit() {
 }
 
 // ── PDF Extrato ─────────────────────────────────────────────────────────────
+// ── #4 Comparação mês a mês + helpers de categoria ──────────────────────────
+function mesAnteriorKey(key){
+  if(key==='todos') return null;
+  let [y,m]=key.split('-').map(Number);
+  m--; if(m<1){m=12;y--;}
+  return `${y}-${String(m).padStart(2,'0')}`;
+}
+function gastosPorCategoria(arr){
+  const o={};
+  arr.filter(e=>e.fluxo!=='receita').forEach(e=>{ o[e.categoria]=(o[e.categoria]||0)+Number(e.valor); });
+  return o;
+}
+function totalGastos(arr){ return arr.filter(e=>e.fluxo!=='receita').reduce((s,e)=>s+Number(e.valor),0); }
+// cor RGB por categoria pro PDF
+const CAT_RGB = {Alimentação:[110,200,160],Transporte:[90,180,150],Moradia:[126,184,247],Saúde:[248,113,113],Beleza:[244,114,182],Vestuário:[251,191,36],Lazer:[167,139,250],Assinatura:[150,130,240],Educação:[100,160,240],Pets:[251,146,60],Presentes:[240,120,180],Compras:[245,158,11],Cartão:[180,150,240],Outros:[160,165,175]};
+
 async function gerarPDF() {
   showToast('Gerando PDF...', 'var(--blue)');
   const all = await loadData();
@@ -1242,7 +1276,64 @@ async function gerarPDF() {
   }
   y += 24;
 
-  // ===== Tabelas detalhadas =====
+  // ===== #9 GRÁFICO: Gastos por categoria (barras horizontais) =====
+  const catTotais = gastosPorCategoria(data);
+  const catOrdenadas = Object.entries(catTotais).sort((a,b)=>b[1]-a[1]);
+  if(catOrdenadas.length > 0 && tGastos > 0) {
+    if(y > 600) { doc.addPage(); y = 50; }
+    doc.setTextColor(70,70,80); doc.setFont('helvetica','bold'); doc.setFontSize(12);
+    doc.text('GASTOS POR CATEGORIA', 40, y); y += 8;
+    doc.setDrawColor(225,225,230); doc.line(40, y, W-40, y); y += 20;
+    const maxCat = catOrdenadas[0][1];
+    const barMaxW = W - 80 - 130; // espaço pra barra
+    catOrdenadas.forEach(([cat,val]) => {
+      if(y > 770) { doc.addPage(); y = 50; }
+      const pct = (val/tGastos*100);
+      const rgb = CAT_RGB[cat] || [160,165,175];
+      // nome
+      doc.setTextColor(60,60,70); doc.setFont('helvetica','normal'); doc.setFontSize(9);
+      doc.text(cat, 40, y+9);
+      // barra de fundo
+      doc.setFillColor(238,239,242); doc.roundedRect(150, y, barMaxW, 12, 3, 3, 'F');
+      // barra preenchida
+      const w = Math.max(3, (val/maxCat)*barMaxW);
+      doc.setFillColor(rgb[0],rgb[1],rgb[2]); doc.roundedRect(150, y, w, 12, 3, 3, 'F');
+      // valor + pct
+      doc.setTextColor(70,70,80); doc.setFont('helvetica','bold'); doc.setFontSize(9);
+      doc.text(fmt(val) + '  (' + pct.toFixed(0) + '%)', W-40, y+9, {align:'right'});
+      y += 22;
+    });
+    y += 16;
+  }
+
+  // ===== #4 COMPARATIVO com mês anterior =====
+  if(monthKey !== 'todos') {
+    const prevKey = mesAnteriorKey(monthKey);
+    const allTx = await loadData();
+    const prevData = allTx.filter(e => parseMonthKey(e.data) === prevKey);
+    if(prevData.length > 0) {
+      if(y > 680) { doc.addPage(); y = 50; }
+      const gPrev = totalGastos(prevData);
+      const gNow = tGastos;
+      const diff = gNow - gPrev;
+      const pctDiff = gPrev > 0 ? (diff/gPrev*100) : 0;
+      doc.setFillColor(248,249,251); doc.roundedRect(40, y, W-80, 70, 8, 8, 'F');
+      doc.setTextColor(70,70,80); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+      doc.text('COMPARATIVO COM ' + monthLabel(prevKey).toUpperCase(), 56, y+24);
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(110,110,120);
+      doc.text(monthLabel(prevKey) + ': ' + fmt(gPrev), 56, y+44);
+      doc.text(monthLabel(monthKey) + ': ' + fmt(gNow), 56, y+58);
+      const subiu = diff > 0;
+      doc.setFont('helvetica','bold'); doc.setFontSize(12);
+      doc.setTextColor(subiu?200:40, subiu?60:160, subiu?60:100);
+      const txt = (subiu?'+':'') + fmt(diff) + ' (' + (subiu?'+':'') + pctDiff.toFixed(0) + '%)';
+      doc.text(txt, W-56, y+44, {align:'right'});
+      doc.setFontSize(8); doc.setTextColor(150,150,160); doc.setFont('helvetica','normal');
+      doc.text(subiu?'Voce gastou mais que no mes anterior':'Voce gastou menos. Parabens!', W-56, y+58, {align:'right'});
+      y += 86;
+    }
+  }
+
   function tableSection(title, items, accent) {
     if(items.length === 0) return;
     if(y > 720) { doc.addPage(); y = 50; }
@@ -1255,7 +1346,9 @@ async function gerarPDF() {
       doc.setTextColor(40,40,50);
       doc.text((e.nome||'').substring(0,40), 40, y);
       doc.setTextColor(150,150,160); doc.setFontSize(8);
-      doc.text((e.categoria||'') + '  -  ' + e.data, 40, y+11);
+      let sub = (e.categoria||'') + '  -  ' + e.data;
+      if(e.tags && e.tags.length) sub += '  -  #' + e.tags.join(' #');
+      doc.text(sub.substring(0,70), 40, y+11);
       doc.setFontSize(10); doc.setTextColor(accent[0],accent[1],accent[2]); doc.setFont('helvetica','bold');
       doc.text((e.fluxo==='receita'?'+':'-') + fmt(e.valor), W-40, y, {align:'right'});
       doc.setFont('helvetica','normal');
@@ -1316,18 +1409,57 @@ function toggleCatFields(val) {
 
 async function saveManualExpense() {
   const nome = document.getElementById('input-nome').value.trim();
-  const valor = parseFloat(document.getElementById('input-valor').value);
+  let valor = parseFloat(document.getElementById('input-valor').value);
   const cat = document.getElementById('input-cat').value;
   const tipo = document.getElementById('input-tipo').value;
   const fluxo = document.getElementById('input-fluxo').value;
   if(!nome || !valor || valor <= 0) { showToast('Preencha nome e valor', 'var(--red)'); return; }
-  await addTransaction({nome, valor, categoria: fluxo==='receita' ? 'Receita' : cat, tipo: fluxo==='receita' ? '' : tipo, fluxo, data: new Date().toLocaleDateString('pt-BR'), id: Date.now()});
+
+  // #7 Tags
+  const tagsRaw = document.getElementById('input-tags').value.trim();
+  const tags = tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [];
+
+  // #6 Dividir conta (só pra gastos)
+  let nomeFinal = nome, valorFinal = valor, obs = '';
+  if(fluxo !== 'receita' && document.getElementById('input-dividir').checked) {
+    const minhaParte = parseFloat(document.getElementById('input-minha-parte').value);
+    if(!minhaParte || minhaParte <= 0 || minhaParte > valor) { showToast('Sua parte deve ser entre 0 e o total', 'var(--red)'); return; }
+    valorFinal = minhaParte;
+    obs = `Dividido: total ${fmt(valor)}, sua parte ${fmt(minhaParte)}`;
+    nomeFinal = nome + ' (dividido)';
+  }
+
+  await addTransaction({
+    nome: nomeFinal, valor: valorFinal,
+    categoria: fluxo==='receita' ? 'Receita' : cat,
+    tipo: fluxo==='receita' ? '' : tipo, fluxo,
+    data: new Date().toLocaleDateString('pt-BR'), id: Date.now(),
+    tags: tags.length ? tags : undefined,
+    obs: obs || undefined
+  });
   document.getElementById('input-nome').value = '';
   document.getElementById('input-valor').value = '';
+  document.getElementById('input-tags').value = '';
+  document.getElementById('input-dividir').checked = false;
+  document.getElementById('input-minha-parte').value = '';
+  document.getElementById('dividir-opts').style.display = 'none';
   document.getElementById('add-modal').classList.remove('show');
   await renderAll();
-  showToast((fluxo==='receita' ? '💵 ' : '✓ ') + nome + ' registrado!', 'var(--teal)');
+  showToast((fluxo==='receita' ? '💵 ' : '✓ ') + nomeFinal + ' registrado!', 'var(--teal)');
   if(fluxo!=='receita') await checarOrcamentos();
+}
+// #6 toggle dividir
+function toggleDividir(checked){
+  document.getElementById('dividir-opts').style.display = checked ? 'block' : 'none';
+  if(checked){
+    const v = parseFloat(document.getElementById('input-valor').value)||0;
+    const hint = document.getElementById('dividir-hint');
+    document.getElementById('input-minha-parte').oninput = function(){
+      const mp = parseFloat(this.value)||0;
+      const outros = v - mp;
+      hint.textContent = v>0 && mp>0 ? `Você paga ${fmt(mp)} • Outros pagam ${fmt(outros>0?outros:0)}` : '';
+    };
+  }
 }
 
 async function openEditProfile() {
@@ -1603,21 +1735,94 @@ function classificarItem(frase) {
   return { fluxo:'gasto', valor, categoria, tipo, nome };
 }
 
+// ── #3 Motor de respostas por voz ───────────────────────────────────────────
+function responderPergunta(t, all) {
+  const gastos = all.filter(e=>e.fluxo!=='receita');
+  const receitas = all.filter(e=>e.fluxo==='receita');
+  const tGastos = gastos.reduce((s,e)=>s+Number(e.valor),0);
+  const tReceitas = receitas.reduce((s,e)=>s+Number(e.valor),0);
+
+  // filtro "esse mês"
+  const hoje = new Date();
+  const mesAtualKey = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
+  const dasteMes = /esse m[êe]s|este m[êe]s|no m[êe]s|do m[êe]s/.test(t);
+  const escopo = dasteMes ? gastos.filter(e=>parseMonthKey(e.data)===mesAtualKey) : gastos;
+
+  // 1) "maior gasto"
+  if(t.includes('maior')) {
+    if(!gastos.length) return 'Você ainda não tem gastos registrados.';
+    const maior = [...escopo].sort((a,b)=>b.valor-a.valor)[0];
+    if(!maior) return 'Sem gastos nesse período.';
+    return `Seu maior gasto${dasteMes?' do mês':''} foi:<br><b>${maior.nome}</b> — <b style="color:var(--red)">${fmt(maior.valor)}</b><br><span style="color:var(--gray);font-size:13px">${maior.categoria} • ${maior.data}</span>`;
+  }
+
+  // 2) "quanto gastei com <categoria>"
+  const catMatch = matchCategoriaPergunta(t);
+  if(catMatch) {
+    const total = escopo.filter(e=>e.categoria===catMatch).reduce((s,e)=>s+Number(e.valor),0);
+    const qtd = escopo.filter(e=>e.categoria===catMatch).length;
+    return `Você gastou <b style="color:var(--red)">${fmt(total)}</b> com <b>${catMatch}</b>${dasteMes?' esse mês':''}.<br><span style="color:var(--gray);font-size:13px">${qtd} registro(s)</span>`;
+  }
+
+  // 3) "quanto gastei esse mês"
+  if(/quanto.*(gastei|gasto|gastos)/.test(t)) {
+    const total = escopo.reduce((s,e)=>s+Number(e.valor),0);
+    return `Você gastou <b style="color:var(--red)">${fmt(total)}</b>${dasteMes?' esse mês':' no total'}.<br><span style="color:var(--gray);font-size:13px">${escopo.length} gasto(s)</span>`;
+  }
+
+  // 4) "quanto recebi / minhas receitas"
+  if(/recebi|receita|entrou|ganhei/.test(t)) {
+    return `Suas receitas somam <b style="color:var(--teal)">${fmt(tReceitas)}</b>.<br><span style="color:var(--gray);font-size:13px">${receitas.length} entrada(s)</span>`;
+  }
+
+  // 5) "quanto sobrou / saldo / quanto tenho"
+  if(/sobrou|saldo|tenho|sobra/.test(t)) {
+    const saldo = tReceitas - tGastos;
+    return `Seu saldo é <b style="color:${saldo<0?'var(--red)':'var(--teal)'}">${(saldo<0?'-':'')+fmt(Math.abs(saldo))}</b>.<br><span style="color:var(--gray);font-size:13px">${fmt(tReceitas)} em receitas − ${fmt(tGastos)} em gastos</span>`;
+  }
+
+  // 6) resumo geral (fallback)
+  const saldo = tReceitas - tGastos;
+  const cats = gastosPorCategoria(gastos);
+  const topCat = Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
+  let extra = topCat ? `<br>Maior categoria: <b>${topCat[0]}</b> (${fmt(topCat[1])})` : '';
+  return `📊 Resumo geral:<br>Gastos: <b style="color:var(--red)">${fmt(tGastos)}</b><br>Receitas: <b style="color:var(--teal)">${fmt(tReceitas)}</b><br>Saldo: <b style="color:${saldo<0?'var(--red)':'var(--teal)'}">${(saldo<0?'-':'')+fmt(Math.abs(saldo))}</b>${extra}`;
+}
+// detecta categoria mencionada na pergunta
+function matchCategoriaPergunta(t) {
+  const mapa = {
+    'Alimentação':['comida','alimentação','alimentacao','mercado','comer','lanche','ifood','restaurante'],
+    'Transporte':['transporte','gasolina','combustível','combustivel','uber','carro','ônibus','onibus'],
+    'Moradia':['moradia','aluguel','casa','luz','água','agua','internet','conta'],
+    'Saúde':['saúde','saude','remédio','remedio','médico','medico','farmácia','farmacia','academia'],
+    'Lazer':['lazer','jogo','jogos','game','games','diversão','diversao','rolê','role','festa'],
+    'Assinatura':['assinatura','assinaturas','netflix','spotify','streaming'],
+    'Educação':['educação','educacao','curso','faculdade','escola','estudo'],
+    'Compras':['compras','roupa','roupas','skate','tênis','tenis','shopping'],
+    'Cartão':['cartão','cartao','fatura','nubank'],
+    'Pets':['pet','pets','cachorro','gato','ração','racao'],
+  };
+  for(const [cat,palavras] of Object.entries(mapa)){
+    if(palavras.some(p=>t.includes(p))) return cat;
+  }
+  return null;
+}
+
 async function processExpense(text) {
   const out = document.getElementById('ai-output');
   out.innerHTML = '<div class="ai-response"><div class="ai-tag">NOGARI IA</div><div class="ai-text" style="color:var(--gray)">Entendendo...</div></div>';
 
   const t = (text || '').toLowerCase().trim();
 
-  // Pergunta de resumo?
-  if((t.includes('resumo') || t.includes('quanto') || t.includes('saldo')) && !/gastei|paguei|comprei|recebi|ganhei/.test(t)) {
+  // ── #3 Resumo/perguntas inteligentes por voz ──────────────────────────────
+  const ehRegistro = /^(gastei|paguei|comprei|recebi|ganhei|torrei|abasteci|gasto de|paguei de)/.test(t);
+  const ehPergunta = /maior|resumo|saldo|sobrou|sobra|quanto|qual|quais|tenho|gastando|meus gastos|minhas receitas|com (comida|mercado|transporte|saúde|saude|lazer|gasolina|combustível|combustivel|cartão|cartao|fatura|assinatura|educação|educacao|pet|pets|roupa|aluguel|farmácia|farmacia)/.test(t);
+  if(ehPergunta && !ehRegistro) {
     const all = await loadData();
-    const gastos = all.filter(e=>e.fluxo!=='receita').reduce((s,e)=>s+Number(e.valor),0);
-    const receitas = all.filter(e=>e.fluxo==='receita').reduce((s,e)=>s+Number(e.valor),0);
-    const saldo = receitas - gastos;
-    out.innerHTML = `<div class="ai-response"><div class="ai-tag">NOGARI IA</div><div class="ai-text">Você tem ${all.length} registro(s).<br>Gastos: <b style="color:var(--red)">${fmt(gastos)}</b><br>Receitas: <b style="color:var(--teal)">${fmt(receitas)}</b><br>Saldo: <b style="color:${saldo<0?'var(--red)':'var(--teal)'}">${(saldo<0?'-':'')+fmt(Math.abs(saldo))}</b></div></div>`;
-    return;
+    const resp = responderPergunta(t, all);
+    if(resp){ out.innerHTML = `<div class="ai-response"><div class="ai-tag">NOGARI IA</div><div class="ai-text">${resp}</div></div>`; return; }
   }
+
 
   // UPGRADE: separa em vários lançamentos
   const frases = separarLancamentos(text);
@@ -1833,9 +2038,20 @@ function renderMetas() {
       const meses = Math.ceil(falta / mensal);
       const anos = Math.floor(meses/12), rm = meses%12;
       let tt = anos>0 ? anos+'a'+(rm>0?' '+rm+'m':'') : meses+(meses===1?' mês':' meses');
-      infoTempo = `<div style="font-size:11px;color:var(--blue);margin-top:6px">⏱️ ${tt} guardando ${fmt(mensal)}/mês</div>`;
+      // #8 data prevista de conclusão
+      const prev = new Date();
+      prev.setMonth(prev.getMonth() + meses);
+      const dataPrev = MESES_PT[prev.getMonth()].slice(0,3) + '/' + prev.getFullYear();
+      infoTempo = `<div style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--blue)">
+          <span>⏱️ ${tt} restantes</span><span>📅 ${dataPrev}</span>
+        </div>
+        <div style="font-size:11px;color:var(--gray);margin-top:3px">Guardando ${fmt(mensal)}/mês • faltam ${fmt(falta)}</div>
+      </div>`;
     } else if(falta === 0) {
-      infoTempo = '<div style="font-size:11px;color:var(--teal);margin-top:6px">🎉 Meta atingida!</div>';
+      infoTempo = '<div style="font-size:11px;color:var(--teal);margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border)">🎉 Meta atingida! Parabéns!</div>';
+    } else if(mensal === 0) {
+      infoTempo = '<div style="font-size:11px;color:var(--gray2);margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border)">💡 Defina um valor mensal pra ver a previsão</div>';
     }
     return `<div class="savings-card" style="cursor:pointer" onclick="openMetaModal('${m.id}')">
       <div class="savings-top"><div class="savings-name">${m.nome}</div><div class="savings-pct">${pct}%</div></div>
@@ -1981,6 +2197,38 @@ window.addEventListener('load', () => {
   // Pequeno delay para o app estar pronto
   setTimeout(() => autenticar(), 300);
 });
+
+// ── #4 Card comparativo na home ─────────────────────────────────────────────
+async function renderComparativo(){
+  const el = document.getElementById('comparativo-card');
+  if(!el) return;
+  const all = await loadData();
+  const hoje = new Date();
+  const mesKey = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
+  const prevKey = mesAnteriorKey(mesKey);
+  const gNow = totalGastos(all.filter(e=>parseMonthKey(e.data)===mesKey));
+  const gPrev = totalGastos(all.filter(e=>parseMonthKey(e.data)===prevKey));
+  if(gPrev === 0 && gNow === 0){ el.innerHTML=''; return; }
+  if(gPrev === 0){ el.innerHTML=''; return; } // sem mês anterior, não compara
+  const diff = gNow - gPrev;
+  const pct = (diff/gPrev*100);
+  const subiu = diff > 0;
+  const cor = subiu ? 'var(--red)' : 'var(--teal)';
+  const seta = subiu ? '↑' : '↓';
+  el.innerHTML = `<div style="margin:0 16px 14px;background:var(--card-grad);border:0.5px solid var(--border2);border-radius:18px;padding:16px;box-shadow:var(--shadow-md)">
+    <div style="font-size:11px;color:var(--gray);letter-spacing:1px;margin-bottom:8px;font-weight:600">VS. ${monthLabel(prevKey).toUpperCase()}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:22px;font-weight:800;color:${cor}">${seta} ${Math.abs(pct).toFixed(0)}%</div>
+        <div style="font-size:12px;color:var(--gray);margin-top:2px">${subiu?'a mais':'a menos'} que mês passado</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:13px;color:var(--gray)">Este mês: <b style="color:var(--white)">${fmtShort(gNow)}</b></div>
+        <div style="font-size:13px;color:var(--gray)">Anterior: <b style="color:var(--white)">${fmtShort(gPrev)}</b></div>
+      </div>
+    </div>
+  </div>`;
+}
 
 // ── UI: Recorrentes (#1) ────────────────────────────────────────────────────
 async function openRecorrentes(){ await renderRecList(); document.getElementById('rec-modal').classList.add('show'); }
@@ -2144,7 +2392,14 @@ setGreeting();
   renderMetas();
   aplicarSalario();
   await renderLembretes();
+  await renderComparativo();
   if(lancados > 0) showToast(`${lancados} lançamento(s) recorrente(s) adicionado(s)`, 'var(--blue)');
+  // Primeira vez (sem nome): convida a cadastrar, só se não houver tela de bloqueio ativa
+  const p = await loadProfile();
+  if(!p.nome || !p.nome.trim()) {
+    const temLock = localStorage.getItem(CRED_KEY);
+    if(!temLock) setTimeout(() => { openEditProfile(); }, 700);
+  }
 })();
 </script>
 </body>
